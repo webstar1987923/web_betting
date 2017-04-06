@@ -89,6 +89,8 @@ export class BetComponent implements OnInit {
         '50/50': '50/50'
     };
 
+    boxStylesDict = {};
+
     shortToComponentAssoc = {};
 
     customBoardStylesMeta = {};
@@ -161,14 +163,14 @@ export class BetComponent implements OnInit {
 
     // For the dialog styles..
     dlgStyles = [
-        {id:0, idc:19, relative:"b_order_ok",       color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
-        {id:1, idc:20, relative:"b_order_cancel",   color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
-        {id:2, idc:21, relative:"b_order_active",   color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
-        {id:3, idc:22, relative:"b_order_inactive", color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
-        {id:4, idc:23, relative:"b_save_ok",        color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
-        {id:5, idc:24, relative:"b_save_cancel",    color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
-        {id:6, idc:25, relative:"d_order_dialog",   color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
-        {id:7, idc:26, relative:"d_save_dialog",    color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
+        {id:0, relative:"b_order_ok",       color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
+        {id:1, relative:"b_order_cancel",   color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
+        {id:2, relative:"b_order_active",   color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
+        {id:3, relative:"b_order_inactive", color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
+        {id:4, relative:"b_save_ok",        color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
+        {id:5, relative:"b_save_cancel",    color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
+        {id:6, relative:"d_order_dialog",   color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
+        {id:7, relative:"d_save_dialog",    color:"#111111", size:"14", bgColor:"#FFFFFF", style:"bold", font:"Book antigua", text:"Clear All Bets"},
     ];
 
     // For the styles of table cells..
@@ -358,7 +360,7 @@ export class BetComponent implements OnInit {
         tabBody: {},
         tabKeys: ['info', 'v4futures', 'v4mini', 'v4micro'],
         chartData: {},
-        styleIndex: 33,
+        styleKey: 'text_immediate_orders',
         titleText: "Immediate Orders"
     };
 
@@ -1999,8 +2001,11 @@ export class BetComponent implements OnInit {
     }
 
     applyStyle(boxStyles) {
+
+        this.boxStylesDict = this.listToObjectPipe.transform(boxStyles);
+
         // For off pane..
-        var offStyle = boxStyles[0]["c0"];
+        var offStyle = this.boxStylesDict["c0"];
         this.offCell.bgColor = "#" + offStyle["fill-Hex"];
         this.offCell.text = offStyle["text"];
         this.offCell.color = "#" + offStyle["text-color"];
@@ -2022,133 +2027,147 @@ export class BetComponent implements OnInit {
                     idR = (idK + 1) % 2 + 2;
                     idK = Math.floor((idK + 1) / 2) + 1;
                 }
-                var style = boxStyles[idc][key];
-                var textcolor = this.returnTextColorRelativeToBackground.transform("#" + style["fill-Hex"]);
-                var compText = (style["text"] !== '') ? style["text"] : "None";
-                
-                console.log("[Bet.Component] R, C : ", idR, idK);
-                
-                this.condCells[idR][idK].bgColor = "#" + style["fill-Hex"];
-                this.condCells[idR][idK].text = style["text"];
-                this.condCells[idR][idK].color = textcolor;
-                this.condCells[idR][idK].font = style["text-font"];
-                this.condCells[idR][idK].tsize = style["text-size"];
-                this.condCells[idR][idK].tstyle = style["text-style"];
-                var compName = this.shortToComponentAssoc[compText];
-                var condID = this.condCellsAssoc[compName];
-                condID = (condID !== undefined) ? condID : -1;
-                this.condCells[idR][idK].condID = condID;
+                var style = this.boxStylesDict[key];
 
-                console.log("[Bet.Component] condCells Cell, Style, Key : ", this.condCells[idx][ids], style, key, idc);
+                if(style) {
+
+                    var textcolor = this.returnTextColorRelativeToBackground.transform("#" + style["fill-Hex"]);
+                    var compText = (style["text"] !== '') ? style["text"] : "None";
+                    
+                    console.log("[Bet.Component] R, C : ", idR, idK);
+                    
+                    this.condCells[idR][idK].bgColor = "#" + style["fill-Hex"];
+                    this.condCells[idR][idK].text = style["text"];
+                    this.condCells[idR][idK].color = textcolor;
+                    this.condCells[idR][idK].font = style["text-font"];
+                    this.condCells[idR][idK].tsize = style["text-size"];
+                    this.condCells[idR][idK].tstyle = style["text-style"];
+                    var compName = this.shortToComponentAssoc[compText];
+                    var condID = this.condCellsAssoc[compName];
+                    condID = (condID !== undefined) ? condID : -1;
+                    this.condCells[idR][idK].condID = condID;
+
+                    console.log("[Bet.Component] condCells Cell, Style, Key : ", this.condCells[idx][ids], style, key, idc);
+
+                }
+                
                 idc++;
             }
         }
 
         // For Buttons..
-        idc = 15;
         for(var idx = 0; idx < this.buttonCells.length; idx++) {
             var key = this.buttonCells[idx]["relative"];
-            var style = boxStyles[idc][key];
-            this.buttonCells[idx].bgColor = "#" + style["fill-Hex"];
-            this.buttonCells[idx].text = style["text"];
-            this.buttonCells[idx].color = "#" + style["text-color"];
-            this.buttonCells[idx].font = style["text-font"];
-            this.buttonCells[idx].tsize = style["text-size"];
-            this.buttonCells[idx].tstyle = style["text-style"];
-            console.log("[Bet.Component] buttonCells Cell, Style, Key : ", this.buttonCells[idx], style, key, idc);
+            var style = this.boxStylesDict[key];
 
-            idc++;
+            if(style) {
+                this.buttonCells[idx].bgColor = "#" + style["fill-Hex"];
+                this.buttonCells[idx].text = style["text"];
+                this.buttonCells[idx].color = "#" + style["text-color"];
+                this.buttonCells[idx].font = style["text-font"];
+                this.buttonCells[idx].tsize = style["text-size"];
+                this.buttonCells[idx].tstyle = style["text-style"];
+                console.log("[Bet.Component] buttonCells Cell, Style, Key : ", this.buttonCells[idx], style, key);
+            }
+
         }
 
         // For Table formats of text and title..
-        idc = 27;
         for(var idx = 0; idx < this.tableStyles.length; idx++) {
             var key = this.tableStyles[idx]["relative"];
-            var style = boxStyles[idc][key];
-            this.tableStyles[idx].color = "#" + style["text-color"];
-            this.tableStyles[idx].font = style["text-font"];
-            this.tableStyles[idx].size = style["text-size"];
-            this.tableStyles[idx].style = style["text-style"];
-            console.log("[Bet.Component] tableStyles Cell, Style, Key : ", this.tableStyles[idx], style, key, idc);
+            var style = this.boxStylesDict[key];
 
-            idc++;
+            if(style) {
+                this.tableStyles[idx].color = "#" + style["text-color"];
+                this.tableStyles[idx].font = style["text-font"];
+                this.tableStyles[idx].size = style["text-size"];
+                this.tableStyles[idx].style = style["text-style"];
+                console.log("[Bet.Component] tableStyles Cell, Style, Key : ", this.tableStyles[idx], style, key);
+            }
+
         }
 
         // For Time formats..
-        idc = 29;
         for(var idx = 0; idx < this.timeStyles.length; idx++) {
             var key = this.timeStyles[idx]["relative"];
-            var style = boxStyles[idc][key];
-            this.timeStyles[idx].color = "#" + style["text-color"];
-            this.timeStyles[idx].font = style["text-font"];
-            this.timeStyles[idx].size = style["text-size"];
-            this.timeStyles[idx].style = style["text-style"];
-            console.log("[Bet.Component] timeStyles Cell, Style, Key : ", this.timeStyles[idx], style, key, idc);
+            var style = this.boxStylesDict[key];
 
-            idc++;
+            if(style) {
+                this.timeStyles[idx].color = "#" + style["text-color"];
+                this.timeStyles[idx].font = style["text-font"];
+                this.timeStyles[idx].size = style["text-size"];
+                this.timeStyles[idx].style = style["text-style"];
+                console.log("[Bet.Component] timeStyles Cell, Style, Key : ", this.timeStyles[idx], style, key);
+            }
+
         }
 
         // For Table cell formats..
-        idc = 39;
         for(var idx = 0; idx < this.tableCells.length; idx++) {
             var key = this.tableCells[idx]["id"] + "";
-            var style = boxStyles[idc][key];
-            this.tableCells[idx].bgColor = "#" + style["fill-Hex"];
-            this.tableCells[idx].text = style["text"];
-            this.tableCells[idx].color = "#" + style["text-color"];
-            this.tableCells[idx].font = style["text-font"];
-            this.tableCells[idx].size = style["text-size"];
-            this.tableCells[idx].style = style["text-style"];
-            console.log("[Bet.Component] tableCells Cell, Style, Key : ", this.tableCells[idx], style, key, idc);
+            var style = this.boxStylesDict[key];
 
-            idc++;
+            if(style) {
+                this.tableCells[idx].bgColor = "#" + style["fill-Hex"];
+                this.tableCells[idx].text = style["text"];
+                this.tableCells[idx].color = "#" + style["text-color"];
+                this.tableCells[idx].font = style["text-font"];
+                this.tableCells[idx].size = style["text-size"];
+                this.tableCells[idx].style = style["text-style"];
+                console.log("[Bet.Component] tableCells Cell, Style, Key : ", this.tableCells[idx], style, key);
+            }
+
         }
 
         // For Chip cell formats..
-        idc = 36;
         for(var idx = 0; idx < this.chipStyles.length; idx++) {
             var key = this.chipStyles[idx]["relative"];
-            var style = boxStyles[idc][key];
-            this.chipStyles[idx].text = style["text"];
-            this.chipStyles[idx].color = style["text-color"];
-            this.chipStyles[idx].img = style["filename"];
-            this.dragAccounts[idx].text = style["text"];
-            this.dragAccounts[idx].bg_url = this.chipStyles[idx].img; 
-            console.log("[Bet.Component] chipStyles Cell, Style, Key : ", this.chipStyles[idx], style, key, idc);
+            var style = this.boxStylesDict[key];
 
-            idc++;
+            if(style) {
+                this.chipStyles[idx].text = style["text"];
+                this.chipStyles[idx].color = style["text-color"];
+                this.chipStyles[idx].img = style["filename"];
+                this.dragAccounts[idx].text = style["text"];
+                this.dragAccounts[idx].bg_url = this.chipStyles[idx].img; 
+                console.log("[Bet.Component] chipStyles Cell, Style, Key : ", this.chipStyles[idx], style, key);
+            }
+
         }
 
         // For dialog cell formats..
         for(var idx = 0; idx < this.dlgStyles.length; idx++) {
-            idc = this.dlgStyles[idx].idc;
             var key = this.dlgStyles[idx]["relative"];
-            var style = boxStyles[idc][key];
-            this.dlgStyles[idx].bgColor = "#" + style["fill-Hex"];
-            this.dlgStyles[idx].text = style["text"];
-            this.dlgStyles[idx].color = "#" + style["text-color"];
-            this.dlgStyles[idx].font = style["text-font"];
-            this.dlgStyles[idx].size = style["text-size"];
-            this.dlgStyles[idx].style = style["text-style"];
-            console.log("[Bet.Component] Cell, Style, Key : ", this.dlgStyles[idx], style, key, idc);
+            var style = this.boxStylesDict[key];
+
+            if(style) {
+                this.dlgStyles[idx].bgColor = "#" + style["fill-Hex"];
+                this.dlgStyles[idx].text = style["text"];
+                this.dlgStyles[idx].color = "#" + style["text-color"];
+                this.dlgStyles[idx].font = style["text-font"];
+                this.dlgStyles[idx].size = style["text-size"];
+                this.dlgStyles[idx].style = style["text-style"];
+                console.log("[Bet.Component] Cell, Style, Key : ", this.dlgStyles[idx], style, key);
+            }
         }
 
-        idc = 31;
+
         // For chart information dialog formats..
         for(var idx = 0; idx < this.chartStyle.length; idx++) {
             var key = this.chartStyle[idx]["relative"];
-            var style = boxStyles[idc][key];
-            console.log("[Bet.Component] Cell, Style, Key : ", this.chartStyle[idx], style, key, idc);
-            this.chartStyle[idx].color = "#" + style["text-color"];
-            this.chartStyle[idx].font = style["text-font"];
-            this.chartStyle[idx].size = style["text-size"];
-            this.chartStyle[idx].style = style["text-style"];
-            console.log("[Bet.Component] Cell, Style, Key : ", this.chartStyle[idx], style, key, idc);
+            var style = this.boxStylesDict[key];
 
-            idc ++;
+            if(style) {
+                this.chartStyle[idx].color = "#" + style["text-color"];
+                this.chartStyle[idx].font = style["text-font"];
+                this.chartStyle[idx].size = style["text-size"];
+                this.chartStyle[idx].style = style["text-style"];
+                console.log("[Bet.Component] Cell, Style, Key : ", this.chartStyle[idx], style, key);
+            }
+
         }
 
-        var titleTextMeta = boxStyles[this.chartInfo4['styleIndex']]['text_immediate_orders']
+        var titleTextMeta = this.boxStylesDict[this.chartInfo4['styleKey']];
 
         this.chartInfo4['titleText'] = (titleTextMeta) ? titleTextMeta['text'] : "Immediate Orders";
 
