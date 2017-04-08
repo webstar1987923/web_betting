@@ -800,13 +800,10 @@ export const htmlTemplate = `
                       <div class="recent-text">{{item}}</div>
                     </td>  
                   </template>
-
                 </tr>
-
               </tbody>
             </table>
           </div>
-
         </div>
 
       </div>

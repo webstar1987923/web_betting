@@ -13,7 +13,7 @@ export class HeaderComponent {
     user = {
         name : "Hidemi Asakura",
         avatarURL : "/static/public/images/avatar.png",
-        version : "0.0.5.0",
+        version : "0.0.5.3",
     };
 
     constructor(

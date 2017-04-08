@@ -756,7 +756,8 @@ table {
     background-color: #d0d27a;
     margin-right: 10px;
     text-align: center;
-    cursor: pointer;	
+    cursor: pointer;
+    padding: 0px 15px;	
 }
 
 .container.newboard-container .color-input {

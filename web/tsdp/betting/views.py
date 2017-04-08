@@ -55,7 +55,11 @@ def addrecord(request):
         print('Immediate Orders found')
         #start_immediate()
 
-    return HttpResponse(json.dumps({"id": record.id}))
+    recent = UserSelection.objects.order_by('-timestamp')[:20]
+    recentdata = [dict((cn, getattr(data, cn)) for cn in ('timestamp', 'mcdate', 'selection')) for data in recent]
+    returndata={"id": record.id, "recent": recentdata}    
+
+    return HttpResponse(json.dumps(returndata))
 
 
 def getrecords(request):

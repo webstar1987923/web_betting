@@ -55,21 +55,39 @@ export class BetComponent implements OnInit {
     
     // Component dictionary features..
     componentDict = [
-        {id:0,      webText:"LowestEquity",        dictText:"0.5LastSIG",          condRelative:10,        color:"#348CE8", },
-        {id:1,      webText:"AntiLowestEquity",   dictText:"Anti0.5LastSIG",      condRelative:-1,        color:"#DE0909", },
-        {id:2,      webText:"HighestEquity",       dictText:"1LastSIG",            condRelative:11,        color:"#E69313", },
-        {id:3,      webText:"AntiHighestEquity",  dictText:"Anti1LastSIG",        condRelative:12,        color:"#ADC0D4", },
-        {id:4,      webText:"Previous",            dictText:"prevACT",             condRelative:20,        color:"#BD2781", },
-        {id:5,      webText:"Anti-Previous",       dictText:"AntiPrevACT",         condRelative:21,        color:"#58B94A", },
-        {id:6,      webText:"50/50",               dictText:"0.75LastSIG",         condRelative:-1,        color:"#31C31D", },
-        {id:7,      webText:"Anti50/50",           dictText:"Anti0.75LastSIG",     condRelative:13,        color:"#D22B8F", },
-        {id:8,      webText:"Seasonality",         dictText:"LastSEA",             condRelative:14,        color:"#5B7736", },
-        {id:9,      webText:"Anti-Seasonality",    dictText:"AntiSEA",             condRelative:15,        color:"#39E386", },
-        {id:10,     webText:"Custom",              dictText:"Custom",              condRelative:-1,        color:"#04165A", },
-        {id:11,     webText:"Anti-Custom",         dictText:"AntiCustom",          condRelative:-1,        color:"#7B2727", },
-        {id:12,     webText:"RiskOn",              dictText:"RiskOn",              condRelative:0,         color:"#C1272D", },
-        {id:13,     webText:"RiskOff",             dictText:"RiskOff",             condRelative:1,         color:"#131313", },
+        {id:0,      webText:"LowestEquity",        dictText:"0.5LastSIG",          condRelative:10 },
+        {id:1,      webText:"AntiLowestEquity",   dictText:"Anti0.5LastSIG",      condRelative:22 },
+        {id:2,      webText:"HighestEquity",       dictText:"1LastSIG",            condRelative:11 },
+        {id:3,      webText:"AntiHighestEquity",  dictText:"Anti1LastSIG",        condRelative:12 },
+        {id:4,      webText:"Previous",            dictText:"prevACT",             condRelative:20 },
+        {id:5,      webText:"Anti-Previous",       dictText:"AntiPrevACT",         condRelative:21 },
+        {id:6,      webText:"50/50",               dictText:"0.75LastSIG",         condRelative:30 },
+        {id:7,      webText:"Anti50/50",           dictText:"Anti0.75LastSIG",     condRelative:13 },
+        {id:8,      webText:"Seasonality",         dictText:"LastSEA",             condRelative:14 },
+        {id:9,      webText:"Anti-Seasonality",    dictText:"AntiSEA",             condRelative:15 },
+        {id:10,     webText:"Custom",              dictText:"Custom",              condRelative:31 },
+        {id:11,     webText:"Anti-Custom",         dictText:"AntiCustom",          condRelative:32 },
+        {id:12,     webText:"RiskOn",              dictText:"RiskOn",              condRelative:0 },
+        {id:13,     webText:"RiskOff",             dictText:"RiskOff",             condRelative:1 }
     ];
+
+    //Mapping component id with its relative position on the bet table
+    compIdToPosMap = {
+        1: 0,
+        2: 1,
+        3: 10,
+        4: 11,
+        5: 12,
+        6: 13,
+        7: 14,
+        8: 15,
+        9: 20,
+        10: 30,
+        11: 21,
+        12: 31,
+        13: 22,
+        14: 32
+    };
 
     componentShorthands = {
         'Off' : 'Off',
@@ -92,6 +110,8 @@ export class BetComponent implements OnInit {
     boxStylesDict = {};
 
     shortToComponentAssoc = {};
+
+    componentsPosMap = {};
 
     customBoardStylesMeta = {};
     loadingMessages = [{
@@ -418,11 +438,6 @@ export class BetComponent implements OnInit {
         this.createCondCellsAssoc();
 
         this.createShortToComponentAssoc();
-
-        // // Testing..
-        // this.parseBetInfo("");
-        // this.setTriggerData("");
-        // this.parseAccountData("");
     }
 
     ngOnInit() {
@@ -830,14 +845,6 @@ export class BetComponent implements OnInit {
             condID = this.condCells[condIdx][idRow].condID;
         }
 
-        // for(var i = 0; i < this.dragAccounts.length; i++) {
-        //     var obj = this.dragAccounts[i];
-        //     if(obj.dragCol == idCol && obj.dragRow == idRow) {
-        //         idx = i;
-        //         break;
-        //     }
-        // }
-
         if(condID == -1) {
             dragRegion = '';
         } else {
@@ -1174,7 +1181,11 @@ export class BetComponent implements OnInit {
       this.busyF = this.betXHRService.postRequest(apiURL, data)
                     .then(function(response) {
                         _this.test_value2 = JSON.stringify(response);
-                        _this.alarmDialog("Successfully saved!", "OK");
+                        _this.alarmDialog("Successfully saved and processed orders!", "OK");
+
+                        //Refresh the recent data table at the bottom of the page...
+                        _this.renderRecentTable(JSON.parse(response));    
+
                         console.log("[Bet.Componenet] Post Result Success : ", response);
                     })
                     .catch(function(err) {
@@ -1493,63 +1504,6 @@ export class BetComponent implements OnInit {
     }
 
     parseBetInfo(jsData) {
-        // // For testing..
-        // // For previous data loading..
-        // var Selection = {
-        //     "v4micro" : ["Anti50/50", "True"],
-        //     "v4mini" : ["Anti-4", "False"],
-        //     "v4futures" : ["Off", "False"],
-        // };
-
-        // var item : any;
-        // var mcdate = "20161212";
-        // item = Selection['v4micro'];    this.layoutBet(item, 0, mcdate);
-        // item = Selection['v4mini'];     this.layoutBet(item, 1, mcdate);
-        // item = Selection['v4futures'];  this.layoutBet(item, 2, mcdate);
-
-        // this.bShowRecentData = true;
-        // // console.log(Selection);
-
-        // // For recent data loading..
-        // var tempData = [
-        //     {
-        //         'timestamp' : 1482928465,
-        //         'mcdate' : '20161228',
-        //         'selection' : "{aaaaaaa}"
-        //     },
-        //     {
-        //         'timestamp' : 1483746201,
-        //         'mcdate' : '20170109',
-        //         'selection' : "{aaaaaaa}"
-        //     },
-        // ];
-
-        // for(var i = 0; i < tempData.length; i++) {
-        //     var oneData : any = {
-        //         'timestamp' : this.estTimeFromUTCStamp(tempData[i].timestamp) || '0',
-        //         'mcdate' : tempData[i].mcdate || "",
-        //         'selection' : JSON.stringify(tempData[i].selection)
-        //     }
-        //     this.recentData.push(oneData);
-        // }
-        // this.bShowRecentData = true;
-
-        // // For boxStyles..
-        // var boxStyleJSON = "[{\"c0\": {\"text\": \"Off\", \"fill-R\": \"34\", \"fill-Hex\": \"225823\", \"text-font\": \"Book Antigua\", \"fill-G\": \"88\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"35\", \"text-color\": \"FFFFFF\"}}, {\"c1\": {\"text\": \"RiskOn\", \"fill-R\": \"190\", \"fill-Hex\": \"BE0032\", \"text-font\": \"Book Antigua\", \"fill-G\": \"0\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"50\", \"text-color\": \"FFFFFF\"}}, {\"c2\": {\"text\": \"RiskOff\", \"fill-R\": \"34\", \"fill-Hex\": \"222222\", \"text-font\": \"Book Antigua\", \"fill-G\": \"34\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"34\", \"text-color\": \"FFFFFF\"}}, {\"c3\": {\"text\": \"LowestEquity\", \"fill-R\": \"243\", \"fill-Hex\": \"F38400\", \"text-font\": \"Book Antigua\", \"fill-G\": \"132\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"0\", \"text-color\": \"000000\"}}, {\"c4\": {\"text\": \"HighestEquity\", \"fill-R\": \"255\", \"fill-Hex\": \"FFFF00\", \"text-font\": \"Book Antigua\", \"fill-G\": \"255\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"0\", \"text-color\": \"000000\"}}, {\"c5\": {\"text\": \"AntiHighestEquity\", \"fill-R\": \"161\", \"fill-Hex\": \"A1CAF1\", \"text-font\": \"Book Antigua\", \"fill-G\": \"202\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"241\", \"text-color\": \"000000\"}}, {\"c6\": {\"text\": \"Anti50/50\", \"fill-R\": \"194\", \"fill-Hex\": \"C2B280\", \"text-font\": \"Book Antigua\", \"fill-G\": \"178\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"128\", \"text-color\": \"000000\"}}, {\"c7\": {\"text\": \"Seasonality\", \"fill-R\": \"230\", \"fill-Hex\": \"E68FAC\", \"text-font\": \"Book Antigua\", \"fill-G\": \"143\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"172\", \"text-color\": \"000000\"}}, {\"c8\": {\"text\": \"Anti-Seasonality\", \"fill-R\": \"249\", \"fill-Hex\": \"F99379\", \"text-font\": \"Book Antigua\", \"fill-G\": \"147\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"121\", \"text-color\": \"000000\"}}, {\"c9\": {\"text\": \"Previous\", \"fill-R\": \"101\", \"fill-Hex\": \"654522\", \"text-font\": \"Book Antigua\", \"fill-G\": \"69\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"34\", \"text-color\": \"FFFFFF\"}}, {\"c10\": {\"text\": \"None\", \"fill-R\": \"242\", \"fill-Hex\": \"F2F3F4\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"244\", \"text-color\": \"FFFFFF\"}}, {\"c11\": {\"text\": \"Anti-Previous\", \"fill-R\": \"0\", \"fill-Hex\": \"008856\", \"text-font\": \"Book Antigua\", \"fill-G\": \"136\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"86\", \"text-color\": \"FFFFFF\"}}, {\"c12\": {\"text\": \"None\", \"fill-R\": \"242\", \"fill-Hex\": \"F2F3F4\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"244\", \"text-color\": \"FFFFFF\"}}, {\"c13\": {\"text\": \"None\", \"fill-R\": \"242\", \"fill-Hex\": \"F2F3F4\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"244\", \"text-color\": \"FFFFFF\"}}, {\"c14\": {\"text\": \"None\", \"fill-R\": \"242\", \"fill-Hex\": \"F2F3F4\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"24\", \"text-style\": \"bold\", \"fill-B\": \"244\", \"text-color\": \"FFFFFF\"}}, {\"b_clear_all\": {\"text\": \"Clear All Bets\", \"fill-R\": \"242\", \"fill-Hex\": \"FFFFFF\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"bold\", \"fill-B\": \"244\", \"text-color\": \"000000\"}}, {\"b_create_new\": {\"text\": \"Create New Board\", \"fill-R\": \"242\", \"fill-Hex\": \"FFFFFF\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"bold\", \"fill-B\": \"244\", \"text-color\": \"000000\"}}, {\"b_confirm_orders\": {\"text\": \"Save Orders for Processing\", \"fill-R\": \"51\", \"fill-Hex\": \"33CC00\", \"text-font\": \"Book Antigua\", \"fill-G\": \"204\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"bold\", \"fill-B\": \"0\", \"text-color\": \"000000\"}}, {\"b_order_ok\": {\"text\": \"Enter Orders\", \"fill-R\": \"41\", \"fill-Hex\": \"29ABE2\", \"text-font\": \"Book Antigua\", \"fill-G\": \"171\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"normal\", \"fill-B\": \"226\", \"text-color\": \"000000\"}}, {\"b_order_cancel\": {\"text\": \"Cancel\", \"fill-R\": \"242\", \"fill-Hex\": \"FFFFFF\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"normal\", \"fill-B\": \"244\", \"text-color\": \"000000\"}}, {\"b_order_active\": {\"text\": \"\", \"fill-R\": \"51\", \"fill-Hex\": \"33CC00\", \"text-font\": \"Book Antigua\", \"fill-G\": \"204\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"normal\", \"fill-B\": \"0\", \"text-color\": \"000000\"}}, {\"b_order_inactive\": {\"text\": \"\", \"fill-R\": \"242\", \"fill-Hex\": \"FFFFFF\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"normal\", \"fill-B\": \"244\", \"text-color\": \"000000\"}}, {\"b_save_ok\": {\"text\": \"Place Immediate Orders Now\", \"fill-R\": \"41\", \"fill-Hex\": \"29ABE2\", \"text-font\": \"Book Antigua\", \"fill-G\": \"171\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"normal\", \"fill-B\": \"226\", \"text-color\": \"000000\"}}, {\"b_save_cancel\": {\"text\": \"OK/Change Immediate Orders\", \"fill-R\": \"242\", \"fill-Hex\": \"FFFFFF\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"normal\", \"fill-B\": \"244\", \"text-color\": \"000000\"}}, {\"d_order_dialog\": {\"text\": \"<b>MOC:</b> Market-On-Close Order. New signals are generated at the close of the market will be placed as Market Orders before the close.<br><b>Immediate:</b> Immediate uses signals generated as of the last Market Close.  If the market is closed, order will be placed as Market-On-Open orders. Otherwise, it will be placed as Market Orders. At the next trigger time, new signals will be placed as MOC orders.\", \"fill-R\": \"242\", \"fill-Hex\": \"FFFFFF\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"normal\", \"fill-B\": \"244\", \"text-color\": \"000000\"}}, {\"d_save_dialog\": {\"text\": \"<center><b>Orders successfully saved.</b><br></center> MOC orders will be placed at the trigger times. If you have entered any immediate orders you may place them now or you may cancel and save different orders.  Any new immediate orders will be placed when the page is refreshed.\", \"fill-R\": \"242\", \"fill-Hex\": \"FFFFFF\", \"text-font\": \"Book Antigua\", \"fill-G\": \"243\", \"filename\": \"\", \"text-size\": \"14\", \"text-style\": \"normal\", \"fill-B\": \"244\", \"text-color\": \"000000\"}}, {\"text_table\": {\"text\": \"\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"Book Antigua\", \"fill-G\": \"\", \"filename\": \"\", \"text-size\": \"18\", \"text-style\": \"normal\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"text_table_title\": {\"text\": \"\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"Book Antigua\", \"fill-G\": \"\", \"filename\": \"\", \"text-size\": \"18\", \"text-style\": \"bold\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"text_datetimenow\": {\"text\": \"\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"Book Antigua\", \"fill-G\": \"\", \"filename\": \"\", \"text-size\": \"18\", \"text-style\": \"bold\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"text_triggertimes\": {\"text\": \"\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"Book Antigua\", \"fill-G\": \"\", \"filename\": \"\", \"text-size\": \"18\", \"text-style\": \"bold\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"text_performance\": {\"text\": \"\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"Book Antigua\", \"fill-G\": \"\", \"filename\": \"\", \"text-size\": \"18\", \"text-style\": \"bold\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"text_performance_account\": {\"text\": \"\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"Book Antigua\", \"fill-G\": \"\", \"filename\": \"\", \"text-size\": \"18\", \"text-style\": \"bold\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"chip_v4micro\": {\"text\": \"50K\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"\", \"fill-G\": \"\", \"filename\": \"chip_maroon.png\", \"text-size\": \"\", \"text-style\": \"\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"chip_v4mini\": {\"text\": \"100K\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"\", \"fill-G\": \"\", \"filename\": \"chip_purple.png\", \"text-size\": \"\", \"text-style\": \"\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"chip_v4futures\": {\"text\": \"250K\", \"fill-R\": \"\", \"fill-Hex\": \"\", \"text-font\": \"\", \"fill-G\": \"\", \"filename\": \"chip_orange.png\", \"text-size\": \"\", \"text-style\": \"\", \"fill-B\": \"\", \"text-color\": \"000000\"}}, {\"1\": {\"text\": \"1\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"134\", \"fill-R\": \"229\", \"fill-Hex\": \"E59A86\", \"fill-G\": \"154\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"2\": {\"text\": \"2\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"95\", \"fill-R\": \"168\", \"fill-Hex\": \"A87F5F\", \"fill-G\": \"127\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"3\": {\"text\": \"3\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"82\", \"fill-R\": \"194\", \"fill-Hex\": \"C26F52\", \"fill-G\": \"111\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"4\": {\"text\": \"4\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"130\", \"fill-R\": \"190\", \"fill-Hex\": \"BEA382\", \"fill-G\": \"163\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"5\": {\"text\": \"5\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"91\", \"fill-R\": \"129\", \"fill-Hex\": \"81885B\", \"fill-G\": \"136\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"6\": {\"text\": \"6\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"78\", \"fill-R\": \"155\", \"fill-Hex\": \"9B774E\", \"fill-G\": \"119\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"7\": {\"text\": \"7\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"134\", \"fill-R\": \"232\", \"fill-Hex\": \"E8B986\", \"fill-G\": \"185\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"8\": {\"text\": \"8\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"95\", \"fill-R\": \"171\", \"fill-Hex\": \"AB9E5F\", \"fill-G\": \"158\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"9\": {\"text\": \"9\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"82\", \"fill-R\": \"197\", \"fill-Hex\": \"C58D52\", \"fill-G\": \"141\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"10\": {\"text\": \"10\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"130\", \"fill-R\": \"193\", \"fill-Hex\": \"C1C182\", \"fill-G\": \"193\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"11\": {\"text\": \"11\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"91\", \"fill-R\": \"132\", \"fill-Hex\": \"84A75B\", \"fill-G\": \"167\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"12\": {\"text\": \"12\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"78\", \"fill-R\": \"158\", \"fill-Hex\": \"9E964E\", \"fill-G\": \"150\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"13\": {\"text\": \"13\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"194\", \"fill-R\": \"208\", \"fill-Hex\": \"D0ACC2\", \"fill-G\": \"172\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"14\": {\"text\": \"14\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"155\", \"fill-R\": \"148\", \"fill-Hex\": \"94919B\", \"fill-G\": \"145\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"15\": {\"text\": \"15\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"142\", \"fill-R\": \"173\", \"fill-Hex\": \"AD808E\", \"fill-G\": \"128\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"16\": {\"text\": \"16\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"190\", \"fill-R\": \"169\", \"fill-Hex\": \"A9B4BE\", \"fill-G\": \"180\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"17\": {\"text\": \"17\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"151\", \"fill-R\": \"109\", \"fill-Hex\": \"6D9997\", \"fill-G\": \"153\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"18\": {\"text\": \"18\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"138\", \"fill-R\": \"134\", \"fill-Hex\": \"86898A\", \"fill-G\": \"137\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"19\": {\"text\": \"19\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"166\", \"fill-R\": \"217\", \"fill-Hex\": \"D9A6A6\", \"fill-G\": \"166\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"20\": {\"text\": \"20\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"127\", \"fill-R\": \"156\", \"fill-Hex\": \"9C8B7F\", \"fill-G\": \"139\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"21\": {\"text\": \"21\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"114\", \"fill-R\": \"181\", \"fill-Hex\": \"B57A72\", \"fill-G\": \"122\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"22\": {\"text\": \"22\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"162\", \"fill-R\": \"178\", \"fill-Hex\": \"B2AEA2\", \"fill-G\": \"174\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"23\": {\"text\": \"23\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"123\", \"fill-R\": \"117\", \"fill-Hex\": \"75937B\", \"fill-G\": \"147\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"24\": {\"text\": \"24\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"110\", \"fill-R\": \"142\", \"fill-Hex\": \"8E836E\", \"fill-G\": \"131\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"25\": {\"text\": \"25\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"177\", \"fill-R\": \"226\", \"fill-Hex\": \"E29DB1\", \"fill-G\": \"157\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"26\": {\"text\": \"26\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"138\", \"fill-R\": \"165\", \"fill-Hex\": \"A5828A\", \"fill-G\": \"130\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"27\": {\"text\": \"27\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"125\", \"fill-R\": \"190\", \"fill-Hex\": \"BE717D\", \"fill-G\": \"113\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"28\": {\"text\": \"28\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"173\", \"fill-R\": \"187\", \"fill-Hex\": \"BBA5AD\", \"fill-G\": \"165\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"29\": {\"text\": \"29\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"134\", \"fill-R\": \"126\", \"fill-Hex\": \"7E8B86\", \"fill-G\": \"139\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"30\": {\"text\": \"30\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"121\", \"fill-R\": \"151\", \"fill-Hex\": \"977A79\", \"fill-G\": \"122\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"31\": {\"text\": \"31\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"164\", \"fill-R\": \"230\", \"fill-Hex\": \"E69EA4\", \"fill-G\": \"158\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"32\": {\"text\": \"32\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"125\", \"fill-R\": \"170\", \"fill-Hex\": \"AA837D\", \"fill-G\": \"131\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"33\": {\"text\": \"33\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"112\", \"fill-R\": \"195\", \"fill-Hex\": \"C37270\", \"fill-G\": \"114\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"34\": {\"text\": \"34\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"160\", \"fill-R\": \"191\", \"fill-Hex\": \"BFA6A0\", \"fill-G\": \"166\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"35\": {\"text\": \"35\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"121\", \"fill-R\": \"131\", \"fill-Hex\": \"838C79\", \"fill-G\": \"140\", \"text-size\": \"24\", \"text-color\": \"000000\"}}, {\"36\": {\"text\": \"36\", \"text-font\": \"Book Antigua\", \"filename\": \"\", \"text-style\": \"bold\", \"fill-B\": \"108\", \"fill-R\": \"156\", \"fill-Hex\": \"9C7B6C\", \"fill-G\": \"123\", \"text-size\": \"24\", \"text-color\": \"000000\"}}]";
-
-        // var boxStyles = JSON.parse(boxStyleJSON);
-        // console.log("[Bet.Component] Box Style Parsed Data:", boxStyles);
-        // this.applyStyle(boxStyles);
-
-        // var performanceChartJSON = "{'31': {'date': '2017-01-06', 'v4futures_rank_text': '15 Rank Anti-31 9.8%, 74 Rank 31 -9.8%', 'v4mini_rank_filename': '2017-01-06_v4mini_31_ranking.png', 'infotext': 'Voting System consisting of Anti-Seasonality, RiskOff.', 'v4mini_filename': '2017-01-06_v4mini_31.png', 'v4micro_filename': '2017-01-06_v4micro_31.png', 'v4micro_rank_filename': '2017-01-06_v4micro_31_ranking.png', 'signals': '<table border=\"1\" class=\"dataframe\"></table>', 'infotext2': 'Results shown reflect daily close-to-close timesteps, only applicable to MOC orders. All results are hypothetical.', 'v4futures_filename': '2017-01-06_v4futures_31.png', 'v4micro_rank_text': '12 Rank 31 14.2%, 78 Rank Anti-31 -14.2%', 'v4futures_rank_filename': '2017-01-06_v4futures_31_ranking.png', 'v4mini_rank_text': '44 Rank 31 0.1%, 47 Rank Anti-31 -0.1%'}}";
-        // performanceChartJSON = performanceChartJSON.replace(/\"/g, "^")
-        // performanceChartJSON = performanceChartJSON.replace(/\'/g, "\"")
-        // performanceChartJSON = performanceChartJSON.replace(/\^/g, "'")
-        // console.log("[Bet.Component] Performance To Parse Data:", performanceChartJSON);
-        // var performanceCharts = JSON.parse(performanceChartJSON);
-        // console.log("[Bet.Component] Performance Style Parsed Data:", performanceCharts);
-        // // this.getPerformanceData(performanceCharts);
-
 
         // For living..
         // For previous data loading..
@@ -1564,11 +1518,64 @@ export class BetComponent implements OnInit {
 
         this.config1.message = this.loadingMessages[2]['else'];
 
+        // For db_componentloc..
+        this.db_componentloc = JSON.parse(previous['componentloc']);
+
+        this.mapComponentsToTable();
+
         var item : any;
         var Selection = JSON.parse(previous['selection']);
         item = Selection['v4micro'];    this.layoutBet(item, 0, mcdate);
         item = Selection['v4mini'];     this.layoutBet(item, 1, mcdate);
         item = Selection['v4futures'];  this.layoutBet(item, 2, mcdate);
+
+        this.renderRecentTable(jsData);    
+        
+        var boxStyles = previous['boxstyles'];
+        console.log("[Bet.Component] Box Style Parsed Data:", boxStyles);
+        this.applyStyle(boxStyles);
+
+        this.boxStylesMeta = boxStyles;
+
+        var performanceCharts = previous['performance'];
+        console.log("[Bet.Component] Performance Style Parsed Data:", performanceCharts);
+        this.getPerformanceData(performanceCharts);
+    }
+
+    mapComponentsToTable() {
+
+        var componentsLen = this.db_componentloc.length;
+
+        this.componentsPosMap = {};
+
+        for(var i=0; i < componentsLen; i++) {
+            var curCompMeta = this.db_componentloc[i];
+            var componentName = curCompMeta['c' + i];
+
+            this.componentsPosMap[componentName] = i;
+        }
+
+        var compDictLen = this.componentDict.length;
+
+        //Update component dict
+        for(var i=0; i < compDictLen; i++) {
+            var curComp = this.componentDict[i];
+
+            var compName = curComp.webText;
+
+            var compPos = this.componentsPosMap[compName];
+            var compRelativePos = (compPos) ? this.compIdToPosMap[compPos] :  -1;
+
+            curComp['condRelative'] = compRelativePos;
+
+        }
+
+    }
+
+    renderRecentTable(jsData) {
+
+        this.bShowRecentData = false;
+        this.recentData = [];
 
         // For recent data loading..
         var tempData = jsData['recent'];
@@ -1589,38 +1596,6 @@ export class BetComponent implements OnInit {
         
         this.dynamicColumnWidth = 60/(selectionItemLen * 3);
         this.bShowRecentData = true;
-
-        // // For Parsing JSON..
-        // var boxStyleJSON = previous['boxstyles'];
-        // console.log("[Bet.Component] Box Style To Parse Data:", boxStyleJSON);
-        // var boxStyles = JSON.parse(boxStyleJSON);
-        // console.log("[Bet.Component] Box Style Parsed Data:", boxStyles);
-        // this.applyStyle(boxStyles);
-
-        // var performanceChartJSON = previous['performance'];
-        // performanceChartJSON = performanceChartJSON.replace(/\"/g, "^");
-        // performanceChartJSON = performanceChartJSON.replace(/\'/g, "\"");
-        // performanceChartJSON = performanceChartJSON.replace(/\^/g, "'");
-        // performanceChartJSON = performanceChartJSON.replace(/day"s/g, "days");
-        // performanceChartJSON = performanceChartJSON.replace(/\'Previous /g, "\"Previous ");
-        // performanceChartJSON = performanceChartJSON.replace(/LONG. \'/g, "LONG. \"");
-        // console.log("[Bet.Component] Performance To Parse Data:", performanceChartJSON);
-        // var performanceCharts = JSON.parse(performanceChartJSON);
-        // console.log("[Bet.Component] Performance Style Parsed Data:", performanceCharts);
-        // this.getPerformanceData(performanceCharts);
-        
-        var boxStyles = previous['boxstyles'];
-        console.log("[Bet.Component] Box Style Parsed Data:", boxStyles);
-        this.applyStyle(boxStyles);
-
-        this.boxStylesMeta = boxStyles;
-
-        // For db_componentloc..
-        this.db_componentloc = JSON.parse(previous['componentloc']);
-
-        var performanceCharts = previous['performance'];
-        console.log("[Bet.Component] Performance Style Parsed Data:", performanceCharts);
-        this.getPerformanceData(performanceCharts);
     }
 
     getParsedSelectionData(selectionObj) {
@@ -1729,8 +1704,7 @@ export class BetComponent implements OnInit {
                 selCond = i;
                 break;
             }
-        }
-
+        }    
 
         // Get layout information of condition and layout bet to that cell..
         if(selCond != -1) {
@@ -2175,6 +2149,7 @@ export class BetComponent implements OnInit {
 
     /*------------------------- For chart purpose ---------------------------------*/
     getPerformanceData(performanceCharts) {
+
         // Read Account Value performance data..
         var actValueJSON = performanceCharts['account_value'];
         var actValueData = {};
@@ -2183,19 +2158,6 @@ export class BetComponent implements OnInit {
         actValueData['1'] = actValueJSON['v4mini_filename'];
         actValueData['2'] = actValueJSON['v4futures_filename'];
         this.chartData['actValue'] = actValueData;
-
-
-        // // Read tabe Value performance data..
-        // for(var i = 0; i < 36; i++) {
-        //     var tableValueJSON = performanceCharts[(i + 1) + ''];
-        //     var tableValueData = {};
-        //     tableValueData['perText'] = tableValueJSON['infotext2'];
-        //     tableValueData['perChartURL'] = tableValueJSON['v4futures_filename'];
-        //     tableValueData['rankText'] = tableValueJSON['v4micro_filename'];
-        //     tableValueData['rankChartURL'] = tableValueJSON['v4mini_filename'];
-        //     this.chartData[(i + 1) + ''] = tableValueData;
-        // }
-
 
         // Read tabel Value performance data..
         for(var i = 0; i < 36; i++) {
@@ -2357,54 +2319,6 @@ export class BetComponent implements OnInit {
 
         console.log("[Bet.Component] Performance Chart Data : ", this.curBetPerformance, objData);
     }
-
-    // drawChart(type, subtype) {
-    //     // // For testing..
-    //     // if(type == 1) {                 // For Unrealized PNL value chart..
-    //     // } else if(type == 2) {          // For Account value chart..
-    //     //     this.chartInfo1[0].chipText = this.dragAccounts[subtype].text;
-    //     //     this.chartInfo1[0].chipImg = this.dragAccounts[subtype].bg_url;
-    //     //     this.chartInfo1[0].chartTitle = "Account Performance Chart";
-    //     //     this.isChartBox1 = true;
-    //     // } else if(type == 3) {          // For table value chart..
-    //     //     console.log("[Bet.Component] Table Type, SubType -> ", type, subtype);
-    //     //     this.chartInfo[1].chartTitle = "Performance Chart : " + subtype;
-    //     //     this.isChartBox2 = true;
-    //     //     this.onTabItem(2);
-    //     // } else {                        // For Conditions value chart..
-    //     //     console.log("[Bet.Component] Condition Type, SubType -> ", type, subtype);
-    //     //     this.chartInfo[1].chartTitle = "Performance Chart : " + subtype;
-    //     //     this.isChartBox2 = true;
-    //     //     this.onTabItem(2);
-    //     // }
-
-
-    //     // For living..
-    //     if(type == 1) {                 // For Unrealized PNL value chart..
-    //     } else if(type == 2) {          // For Account value chart..
-    //         console.log("[Bet.Component] Account Type, SubType -> ", type, subtype);
-    //         this.chartInfo1[0].chipText = this.dragAccounts[subtype].text;
-    //         this.chartInfo1[0].chipImg = this.dragAccounts[subtype].bg_url;
-    //         this.chartInfo1[0].bodyText = this.chartData['actValue']['infotext'];
-    //         this.chartInfo1[0].chartURL = this.chartData['actValue'][subtype + ''];
-    //         this.chartInfo1[0].chartTitle = "Account Performance Chart";
-    //         this.isChartBox1 = true;
-    //     } else if(type == 3) {          // For table value chart..
-    //         console.log("[Bet.Component] Table Type, SubType -> ", type, subtype);
-    //         var objData = this.chartData[subtype + ''];
-    //         this.chartInfo2[0].chartTitle = "Performance Chart : " + subtype;
-    //         this.chartInfo2[0].perText = objData['perText'];
-    //         this.isChartBox2 = true;
-    //         this.onTabItem(2);
-    //     } else {                        // For Conditions value chart..
-    //         console.log("[Bet.Component] Condition Type, SubType -> ", type, subtype);
-    //         this.isChartBox2 = true;
-    //         this.chartInfo2[0].chartTitle = "Performance Chart : " + subtype;
-    //         this.isChartBox2 = true;
-    //         this.onTabItem(2);
-    //     }
-
-    // }
 
     /*------------------------- For general purpose ---------------------------------*/
     alarmDialog(alarmText, alarmButton) {
