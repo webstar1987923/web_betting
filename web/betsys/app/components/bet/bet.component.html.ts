@@ -1148,6 +1148,14 @@ export const htmlTemplate = `
       </div>
       <div class="chart-pane-body-text" innerHTML="{{chartInfo2[0].rankText}}">
       </div>
+      <div class="chart-pane-body-text"
+          [style.color] = "chartStyle[0].color"
+          [style.fontSize.px] = "chartStyle[0].size"
+          [style.fontFamily] = "chartStyle[0].font"
+          [style.fontWeight] = "chartStyle[0].style"
+          innerHTML="{{chartInfo2[0].dateText}}"
+        >
+      </div>
       <div class="chart-img"
           innerHTML="{{chartInfo2[0].signals}}"
           style="padding: 10px;"

@@ -344,6 +344,8 @@ export class BetComponent implements OnInit {
         rankText:"8 Rank 29 5.8%, Rank Anti-29 -5.8%",
         rankChartURL:"2017-01-06_v4mini_RiskOff.png",
         signals:"",
+        dateTextDummy: "Signals by account as of",
+        dateText: ""
     }];
 
     chartInfo3 = {
@@ -2153,7 +2155,10 @@ export class BetComponent implements OnInit {
         // Read Account Value performance data..
         var actValueJSON = performanceCharts['account_value'];
         var actValueData = {};
-        actValueData['infotext'] = actValueJSON['infotext'];
+        actValueData['0_infotext'] = actValueJSON['v4micro_infotext'];
+        actValueData['1_infotext'] = actValueJSON['v4mini_infotext'];
+        actValueData['2_infotext'] = actValueJSON['v4futures_infotext'];
+
         actValueData['0'] = actValueJSON['v4micro_filename'];
         actValueData['1'] = actValueJSON['v4mini_filename'];
         actValueData['2'] = actValueJSON['v4futures_filename'];
@@ -2165,7 +2170,10 @@ export class BetComponent implements OnInit {
             var tableValueData = {};
 
             // Data for performance chart..
-            tableValueData['perText'] = tableValueJSON['infotext2'];
+            tableValueData['0_perText'] = tableValueJSON['v4futures_infotext'];
+            tableValueData['1_perText'] = tableValueJSON['v4mini_infotext'];
+            tableValueData['2_perText'] = tableValueJSON['v4micro_infotext'];
+            
             tableValueData['0_per_file'] = tableValueJSON['v4futures_filename'];
             tableValueData['1_per_file'] = tableValueJSON['v4mini_filename'];
             tableValueData['2_per_file'] = tableValueJSON['v4micro_filename'];
@@ -2179,8 +2187,8 @@ export class BetComponent implements OnInit {
             tableValueData['2_rank_file'] = tableValueJSON['v4micro_rank_filename'];
 
             // Data for info tab..
-            tableValueData['date'] = tableValueJSON['date'];
-            tableValueData['infoText'] = tableValueJSON['infotext'];
+            tableValueData['dateText'] = tableValueJSON['date'];
+            tableValueData['infoText'] = tableValueJSON['infotext2'];
             tableValueData['signals'] = tableValueJSON['signals'];
             this.chartData[(i + 1) + ''] = tableValueData;
         }
@@ -2192,7 +2200,10 @@ export class BetComponent implements OnInit {
             var condValueData = {};
 
             // Data for performance chart..
-            condValueData['perText'] = condValueJSON['infotext2'];
+            condValueData['0_perText'] = condValueJSON['v4futures_infotext'];
+            condValueData['1_perText'] = condValueJSON['v4mini_infotext'];
+            condValueData['2_perText'] = condValueJSON['v4micro_infotext'];
+            
             condValueData['0_per_file'] = condValueJSON['v4futures_filename'];
             condValueData['1_per_file'] = condValueJSON['v4mini_filename'];
             condValueData['2_per_file'] = condValueJSON['v4micro_filename'];
@@ -2206,8 +2217,8 @@ export class BetComponent implements OnInit {
             condValueData['2_rank_file'] = condValueJSON['v4micro_rank_filename'];
 
             // Data for info tab..
-            condValueData['date'] = condValueJSON['date'];
-            condValueData['infoText'] = condValueJSON['infotext'];
+            condValueData['dateText'] = condValueJSON['date'];
+            condValueData['infoText'] = condValueJSON['infotext2'];
             condValueData['signals'] = condValueJSON['signals'];
             this.chartData[dictCell.webText] = condValueData;
         }
@@ -2247,7 +2258,7 @@ export class BetComponent implements OnInit {
             this.chartInfo1[0].chartTitle = "Account Performance Chart";
             this.curBetPerformance = subType + "";
             this.chartInfo1[0].chartURL = this.chartData['actValue'][this.curBetPerformance];
-            this.chartInfo1[0].bodyText = this.chartData['actValue']['infotext'];
+            this.chartInfo1[0].bodyText = this.chartData['actValue'][this.curBetPerformance + '_infotext'];
             this.isChartBox1 = true;
         } else if(type == 3) {          // For table value chart..
             this.curBetPerformance = subType + "";
@@ -2308,13 +2319,15 @@ export class BetComponent implements OnInit {
         // For living..
         var objData = this.chartData[this.curBetPerformance];
         if(this.tabID == 1) {
-            this.chartInfo2[0].perText = objData['perText'];
+            this.chartInfo2[0].perText = objData['infoText'];
             this.chartInfo2[0].signals = objData['signals'];
+            this.chartInfo2[0].dateText = this.chartInfo2[0].dateTextDummy + ' ' + objData['dateText'];
         } else {
-            this.chartInfo2[0].perText = objData['perText'];
+            this.chartInfo2[0].perText = objData[idx + '_perText'];
             this.chartInfo2[0].perChartURL = objData[idx + '_per_file'];
             this.chartInfo2[0].rankText = objData[idx + '_rank_text'];
             this.chartInfo2[0].rankChartURL = objData[idx + '_rank_file'];
+            this.chartInfo2[0].dateText = '';
         }
 
         console.log("[Bet.Component] Performance Chart Data : ", this.curBetPerformance, objData);
