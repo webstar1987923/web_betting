@@ -1513,6 +1513,8 @@ export class BetComponent implements OnInit {
         var mcdate = previous['mcdate'] || "Off";
 
         this.customBoardStylesMeta = this.listToObjectPipe.transform(previous.customstyles);
+        var boxStyles = previous['boxstyles'];
+        this.boxStylesDict = this.listToObjectPipe.transform(boxStyles);
 
         if(this.customBoardStylesMeta['list_loadingscreens']) {
             this.loadingMessages = this.customBoardStylesMeta['list_loadingscreens'];
@@ -1525,15 +1527,8 @@ export class BetComponent implements OnInit {
 
         this.mapComponentsToTable();
 
-        var item : any;
-        var Selection = JSON.parse(previous['selection']);
-        item = Selection['v4micro'];    this.layoutBet(item, 0, mcdate);
-        item = Selection['v4mini'];     this.layoutBet(item, 1, mcdate);
-        item = Selection['v4futures'];  this.layoutBet(item, 2, mcdate);
-
         this.renderRecentTable(jsData);    
-        
-        var boxStyles = previous['boxstyles'];
+
         console.log("[Bet.Component] Box Style Parsed Data:", boxStyles);
         this.applyStyle(boxStyles);
 
@@ -1542,6 +1537,12 @@ export class BetComponent implements OnInit {
         var performanceCharts = previous['performance'];
         console.log("[Bet.Component] Performance Style Parsed Data:", performanceCharts);
         this.getPerformanceData(performanceCharts);
+
+        var item : any;
+        var Selection = JSON.parse(previous['selection']);
+        item = Selection['v4micro'];    this.layoutBet(item, 0, mcdate);
+        item = Selection['v4mini'];     this.layoutBet(item, 1, mcdate);
+        item = Selection['v4futures'];  this.layoutBet(item, 2, mcdate);
     }
 
     mapComponentsToTable() {
@@ -1550,11 +1551,14 @@ export class BetComponent implements OnInit {
 
         this.componentsPosMap = {};
 
-        for(var i=0; i < componentsLen; i++) {
-            var curCompMeta = this.db_componentloc[i];
-            var componentName = curCompMeta['c' + i];
+        for(var i=1; i < componentsLen; i++) {
+            var curCompMeta =   this.boxStylesDict['c' + i];
+            var componentName = curCompMeta['text'];
 
-            this.componentsPosMap[componentName] = i;
+            if(componentName !== '') {
+                componentName = this.shortToComponentAssoc[componentName];
+                this.componentsPosMap[componentName] = i;
+            }
         }
 
         var compDictLen = this.componentDict.length;
@@ -1566,10 +1570,9 @@ export class BetComponent implements OnInit {
             var compName = curComp.webText;
 
             var compPos = this.componentsPosMap[compName];
-            var compRelativePos = (compPos) ? this.compIdToPosMap[compPos] :  -1;
+            var compRelativePos = (compPos !== null && compPos !== undefined) ? this.compIdToPosMap[compPos] :  -1;
 
             curComp['condRelative'] = compRelativePos;
-
         }
 
     }
@@ -1651,6 +1654,8 @@ export class BetComponent implements OnInit {
         var dragObj = this.dragAccounts[dragItem];
         dragObj.display = "none";
 
+        dragObj.nextBet = component;
+
         // For simple layout..
         if(component == "Off") {                            // put bet on off panel..
             dragObj.iNextBet = -1;
@@ -1672,8 +1677,6 @@ export class BetComponent implements OnInit {
             }
         }
 
-        dragObj.nextBet = component;
-
         if(orderType == "True") {
             dragObj.orderType = this.getImmediateTime(mcdate);
             dragObj.iOrderType = 1;
@@ -1689,13 +1692,33 @@ export class BetComponent implements OnInit {
         // console.log("[Bet.Component] Previous Item Cell For Table : ", betVal, idCol, idRow);
         dragObj.dragCol = idCol; dragObj.dragRow = idRow;
         var dragQueue = this.betCells[idCol][idRow];
-        for(var i = 0; i < dragQueue.length; i++) {
-            if(dragQueue[i] == -1) {
-                dragQueue[i] = dragItem;
-                break;
+
+        //Get the cell meta object where the betting chips is to be placed...
+        var tableCell = this.tableCells[idCol * 3 + ( 2 - idRow )];
+
+        //If it is not empty cell then fill it with corresponding metadata..
+        if(tableCell && tableCell['text'] !== '') {
+            
+            for(var i = 0; i < dragQueue.length; i++) {
+                if(dragQueue[i] == -1) {
+                    dragQueue[i] = dragItem;
+                    break;
+                }
             }
+
+            dragObj.dragOrder = i;
+
+        } else {
+            //If the chip position is non-existent, then move it to Off by default...
+            dragObj.dragCol = -1;
+            dragObj.dragRow = -1;
+            dragObj.display = 'table-cell';
+            dragObj.dragOrder = -1;
+            dragObj.nextBet = "Off";
+            dragObj.iNextBet = -1;
+
+            this.dragAccounts[dragItem]['nextBet'] = "Off";
         }
-        dragObj.dragOrder = i;
     }
 
     putBetOnCond (component, dragObj, dragItem, revert) {
@@ -1719,23 +1742,31 @@ export class BetComponent implements OnInit {
             
             var dragItemQueue:any;
             
-            if(colID != -1 && rowID != -1){
+            if(colID != -1 && rowID != -1 && condItem.condRelative !== -1) {
                 dragObj.dragCol = 12 + colID; dragObj.dragRow = rowID;
                 dragItemQueue = this.condCells[colID][rowID].dragItem;
+
+                for(var i = 0; i < dragItemQueue.length; i++) {
+                    if(dragItemQueue[i] == -1) {
+                        dragItemQueue[i] = dragItem;
+                        break;
+                    }
+                }
+                dragObj.dragOrder = i;
+
             } else {
+                
+                //If the chip position is non-existent, then move it to Off by default...
                 dragObj.dragCol = -1;
                 dragObj.dragRow = -1;
                 dragItemQueue = [];
                 dragObj.display = 'table-cell';
-            }
+                dragObj.dragOrder = -1;
+                dragObj.nextBet = "Off";
+                dragObj.iNextBet = -1;
 
-            for(var i = 0; i < dragItemQueue.length; i++) {
-                if(dragItemQueue[i] == -1) {
-                    dragItemQueue[i] = dragItem;
-                    break;
-                }
+                this.dragAccounts[dragItem]['nextBet'] = "Off";
             }
-            dragObj.dragOrder = i;
         }
     }
 
@@ -1977,8 +2008,6 @@ export class BetComponent implements OnInit {
     }
 
     applyStyle(boxStyles) {
-
-        this.boxStylesDict = this.listToObjectPipe.transform(boxStyles);
 
         // For off pane..
         var offStyle = this.boxStylesDict["c0"];
