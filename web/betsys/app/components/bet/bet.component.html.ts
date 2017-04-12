@@ -800,13 +800,10 @@ export const htmlTemplate = `
                       <div class="recent-text">{{item}}</div>
                     </td>  
                   </template>
-
                 </tr>
-
               </tbody>
             </table>
           </div>
-
         </div>
 
       </div>
@@ -1150,6 +1147,14 @@ export const htmlTemplate = `
       <div class="chart-pane-body-text" style="padding-top: 0px;" innerHTML="{{chartInfo2[0].perText}}">
       </div>
       <div class="chart-pane-body-text" innerHTML="{{chartInfo2[0].rankText}}">
+      </div>
+      <div class="chart-pane-body-text"
+          [style.color] = "chartStyle[0].color"
+          [style.fontSize.px] = "chartStyle[0].size"
+          [style.fontFamily] = "chartStyle[0].font"
+          [style.fontWeight] = "chartStyle[0].style"
+          innerHTML="{{chartInfo2[0].dateText}}"
+        >
       </div>
       <div class="chart-img"
           innerHTML="{{chartInfo2[0].signals}}"
