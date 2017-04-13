@@ -301,8 +301,7 @@ def register(request):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/login/')
-    else:
-		aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    else:		
         form = UserCreationForm()
         return render(request, 'registration.html', {'form': form})
 
