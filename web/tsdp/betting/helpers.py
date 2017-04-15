@@ -68,7 +68,7 @@ def getChartsDict():
         chart_table_dict[table]=df.to_dict()
     return chart_table_dict
 
-def getCustomizeChip():
+def getCustomizeChip(target=None):
     readConn=getBackendDB()
     futuresDict = pd.read_sql('select * from Dictionary', con=readConn,\
                               index_col='CSIsym')
@@ -101,8 +101,9 @@ def getCustomizeChip():
                 '_BRANK.png" target="_blank">' + x + '</a>' \
                 for x in desc_hyperlink]
     markets_df=pd.concat([futuresDF[['usdATR','QTY','QTY_MINI','QTY_MICRO',\
-                        'group']],feeddata[['Desc','margin']]],\
+                        'group']],feeddata[['Desc']]],\
                         axis=1).sort_values(by=['group'])
+    markets_df.columns=[u'usdATR', u'QTY_v4futures', u'QTY_v4mini', u'QTY_v4micro', u'group', u'Desc']
     desc_list = markets_df.Desc.values
     desc_hyperlink = [re.sub(r'\(.*?\)', '', desc) for desc in desc_list]
     desc_hyperlink = ['<a href="/static/images/v4_' + [futuresDict.index[i]\
@@ -111,14 +112,17 @@ def getCustomizeChip():
                 '_BRANK.png" target="_blank">' + x + '</a>' \
                 for x in desc_hyperlink]
     markets_df['Desc']=desc_hyperlink
+    markets_df['margin_v4futures']=feeddata.margin*markets_df.QTY_v4futures
+    markets_df['margin_v4mini']=feeddata.margin*markets_df.QTY_v4mini
+    markets_df['margin_v4micro']=feeddata.margin*markets_df.QTY_v4micro
 
     for account in ai_dict:
-        markets_df[account]=[False if sym in ai_dict[account]['offline']\
+        markets_df['online_'+account]=[False if sym in ai_dict[account]['offline']\
                    else True for sym in markets_df.index]
     ai_dict2={account:{key:value for key,value in dic.items() if key\
                        not in ['selection','offline']} for account, dic\
                         in ai_dict.items()}
-        
+
     markets_df=markets_df.transpose()
     json_markets_df=markets_df.to_json()
     modify_chip_dict={
@@ -482,7 +486,7 @@ def getCustomSignals():
 
     return {'name':name, 'customsignals':customsignals}
 
-def recreateCharts(custom_signals=None):
+def recreateCharts(custom_signals=None, accountinfo=None):
     if custom_signals is not None:
         filename='custom_signals_data.json'
         with open(filename, 'w') as f:
@@ -515,6 +519,14 @@ def recreateCharts(custom_signals=None):
         #run_vol_adjsize()
         pass
 
+    if accountinfo is not None:
+        print accountinfo
+        filename='accountinfo_data.json'
+        #save_dict={'name':name, 'customsignals':custom_signals_data}
+        with open(filename, 'w') as f:
+             json.dump(accountinfo, f)
+        print 'Saved',filename
+        
     #time.sleep(15)
     #update_chartdb()
     pass
