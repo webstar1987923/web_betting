@@ -340,6 +340,7 @@ export class BetComponent implements OnInit {
         id:2, top:400, left: 340,
         chartTitle:"Account Performance Chart",
         perText:"Results shown reflect daily close-to-close timesteps, only aplicable to MOC orders.",
+        perTextDummy: "Voting System consisting of Anti50/50, HighestEquity.",
         perChartURL:"2017-01-06_v4mini_RiskOff.png",
         rankText:"8 Rank 29 5.8%, Rank Anti-29 -5.8%",
         rankChartURL:"2017-01-06_v4mini_RiskOff.png",
@@ -2348,11 +2349,10 @@ export class BetComponent implements OnInit {
         // For living..
         var objData = this.chartData[this.curBetPerformance];
         if(this.tabID == 1) {
-            this.chartInfo2[0].perText = objData['infoText'];
             this.chartInfo2[0].signals = objData['signals'];
             this.chartInfo2[0].dateText = this.chartInfo2[0].dateTextDummy + ' ' + objData['dateText'];
         } else {
-            this.chartInfo2[0].perText = objData[idx + '_perText'];
+            this.chartInfo2[0].perText = objData['infoText'];
             this.chartInfo2[0].perChartURL = objData[idx + '_per_file'];
             this.chartInfo2[0].rankText = objData[idx + '_rank_text'];
             this.chartInfo2[0].rankChartURL = objData[idx + '_rank_file'];
