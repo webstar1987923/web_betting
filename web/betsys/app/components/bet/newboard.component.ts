@@ -78,6 +78,24 @@ export class NewBoardComponent implements OnInit {
           ]
       };
 
+      // Component dictionary features..
+      componentDict = [
+          {webText:"LowestEquity"},
+          {webText:"AntiLowestEquity"},
+          {webText:"HighestEquity"},
+          {webText:"AntiHighestEquity"},
+          {webText:"Previous"},
+          {webText:"Anti-Previous"},
+          {webText:"50/50"},
+          {webText:"Anti50/50"},
+          {webText:"Seasonality"},
+          {webText:"Anti-Seasonality"},
+          {webText:"Custom"},
+          {webText:"Anti-Custom"},
+          {webText:"RiskOn"},
+          {webText:"RiskOff"}
+      ];
+
       selectedComponentInput : any;
 
       listToObjectPipe = new ListToObjectTransform();
@@ -175,6 +193,46 @@ export class NewBoardComponent implements OnInit {
         '50/50': '50/50'
       };
 
+      performanceChartMeta = {
+        top: 400, 
+        left: 340,
+        marginLeft: 0,
+        tabID: 1,
+        curComp: '',
+        isPerfChart: false,
+        chartTitle: "Account Performance Chart",
+        perText: "Results shown reflect daily close-to-close timesteps, only aplicable to MOC orders.",
+        perTextDummy: "Voting System consisting of Anti50/50, HighestEquity.",
+        perChartURL: "2017-01-06_v4mini_RiskOff.png",
+        rankText: "8 Rank 29 5.8%, Rank Anti-29 -5.8%",
+        rankChartURL: "2017-01-06_v4mini_RiskOff.png",
+        signals: "",
+        dateTextDummy: "Signals by account as of",
+        dateText: "",
+        dragAccounts: [
+            {   // Acount bet 50K..
+                bg_url:"chip_maroon.png",
+                text:"50K"
+            },
+            {   // Acount bet 100K..
+                bg_url:"chip_maroon.png",
+                text:"100K"
+            },
+            {   // Acount bet 250K..
+                bg_url:"chip_maroon.png",
+                text:"250K"
+            }
+        ],
+        styles: {
+          relative:"text_performance", 
+          color:"#111111", 
+          size:"14", 
+          style:"bold", 
+          font:"Book antigua"
+        },
+        chartData: {}
+      };
+
     	error: any;
 
       @ViewChild('alarmModal') alarmModal:ModalComponent;
@@ -209,6 +267,8 @@ export class NewBoardComponent implements OnInit {
               _this.boxStyles = _this.recordsMeta.boxstyles;
 
               _this.assignPageMeta();
+        
+              _this.parsePerformanceData();
 
             })
             .catch(error => this.error = error);
@@ -235,6 +295,42 @@ export class NewBoardComponent implements OnInit {
           this.pageMeta.loadingMessages = this.customBoardStylesMeta['list_loadingscreens'];
         }
         
+      }
+
+      parsePerformanceData() {
+        var performanceCharts = this.recordsMeta['performance'];
+        var dictLen = this.componentDict.length;
+
+        // Read Condition Value performance data..
+        for(var i = 0; i < dictLen; i++) {
+            var dictCell = this.componentDict[i];
+            var condValueJSON = performanceCharts[dictCell.webText];
+            var condValueData = {};
+
+            // Data for performance chart..
+            condValueData['0_perText'] = condValueJSON['v4futures_infotext'];
+            condValueData['1_perText'] = condValueJSON['v4mini_infotext'];
+            condValueData['2_perText'] = condValueJSON['v4micro_infotext'];
+            
+            condValueData['0_per_file'] = condValueJSON['v4futures_filename'];
+            condValueData['1_per_file'] = condValueJSON['v4mini_filename'];
+            condValueData['2_per_file'] = condValueJSON['v4micro_filename'];
+
+            // Data for rank chart..
+            condValueData['0_rank_text'] = condValueJSON['v4futures_rank_text'];
+            condValueData['0_rank_file'] = condValueJSON['v4futures_rank_filename'];
+            condValueData['1_rank_text'] = condValueJSON['v4mini_rank_text'];
+            condValueData['1_rank_file'] = condValueJSON['v4mini_rank_filename'];
+            condValueData['2_rank_text'] = condValueJSON['v4micro_rank_text'];
+            condValueData['2_rank_file'] = condValueJSON['v4micro_rank_filename'];
+
+            // Data for info tab..
+            condValueData['dateText'] = condValueJSON['date'];
+            condValueData['infoText'] = condValueJSON['infotext2'];
+            condValueData['signals'] = condValueJSON['signals'];
+
+            this.performanceChartMeta.chartData[dictCell.webText] = condValueData;
+        }
       }
 
       pushAutoSelectColors(colorsAry) {
@@ -608,6 +704,34 @@ export class NewBoardComponent implements OnInit {
       this.alarmOKBtnText = alarmButton;
       this.alarmRedirectBtnText = redirectButton;
       this.alarmModal.open();
+  }
+
+
+  /* Code for performance chart in new board. Need to resue the code between new board and board page */
+  performanceChart(component) {
+      // For Conditions value chart..
+      this.performanceChartMeta.curComp = component;
+      this.performanceChartMeta.chartTitle = "Performance Chart : " + component;
+      this.performanceChartMeta.isPerfChart = true;
+      this.onTabItem(1);
+  }
+
+  onTabItem(itemID) {
+    this.performanceChartMeta.tabID = itemID;
+    var idx = itemID - 2;
+
+    // For living..
+    var objData = this.performanceChartMeta.chartData[this.performanceChartMeta.curComp];
+    if(this.performanceChartMeta.tabID == 1) {
+        this.performanceChartMeta.signals = objData['signals'];
+        this.performanceChartMeta.dateText = this.performanceChartMeta.dateTextDummy + ' ' + objData['dateText'];
+    } else {
+        this.performanceChartMeta.perText = objData['infoText'];
+        this.performanceChartMeta.perChartURL = objData[idx + '_per_file'];
+        this.performanceChartMeta.rankText = objData[idx + '_rank_text'];
+        this.performanceChartMeta.rankChartURL = objData[idx + '_rank_file'];
+        this.performanceChartMeta.dateText = '';
+    }
   }
 
 }

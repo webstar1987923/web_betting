@@ -237,30 +237,30 @@ export class BetComponent implements OnInit {
     condCells = [
         // Main condition..
         [
-            {id:0, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:12, text:"RiskOn",                orgText:"RiskOn"},
-            {id:1, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:13, text:"RiskOff",               orgText:"RiskOff"},
+            {id:0, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:12, text:"RiskOn", orgText:"RiskOn"},
+            {id:1, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:13, text:"RiskOff", orgText:"RiskOff"}
         ],
         // Col condition..
         [
-            {id:0, dragItem:[-1, -1, -1], color:"#348CE8", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:0, text:"LowestEquity",           orgText:"LowestEq"},
-            {id:1, dragItem:[-1, -1, -1], color:"#E69313", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:2, text:"HighestEquity",          orgText:"HighestEq"},
-            {id:2, dragItem:[-1, -1, -1], color:"#C5B9B9", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:3, text:"AntiHighestEquity",      orgText:"Anti-HE"},
-            {id:3, dragItem:[-1, -1, -1], color:"#C760C4", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:7, text:"Anti50/50",              orgText:"Anti-50"},
-            {id:4, dragItem:[-1, -1, -1], color:"#3C763D", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:8, text:"Seasonality",            orgText:"Seasonality"},
-            {id:5, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:9, text:"Anti-Seasonality",       orgText:"Anti-Sea"},
+            {id:0, dragItem:[-1, -1, -1], color:"#348CE8", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:0, text:"LowestEquity", orgText:"LowestEq"},
+            {id:1, dragItem:[-1, -1, -1], color:"#E69313", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:2, text:"HighestEquity", orgText:"HighestEq"},
+            {id:2, dragItem:[-1, -1, -1], color:"#C5B9B9", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:3, text:"AntiHighestEquity", orgText:"Anti-HE"},
+            {id:3, dragItem:[-1, -1, -1], color:"#C760C4", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:7, text:"Anti50/50", orgText:"Anti-50"},
+            {id:4, dragItem:[-1, -1, -1], color:"#3C763D", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:8, text:"Seasonality", orgText:"Seasonality"},
+            {id:5, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:9, text:"Anti-Seasonality", orgText:"Anti-Sea"}
         ],
         // Row condition 1..
         [
-            {id:0, dragItem:[-1, -1, -1], color:"#D22B8F", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:4, text:"Previous",               orgText:"Previous"},
-            {id:1, dragItem:[-1, -1, -1], color:"#31C31D", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:5, text:"Anti-Previous",          orgText:"Anti-Previous"},
-            {id:2, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none",                  orgText:"none"},            
+            {id:0, dragItem:[-1, -1, -1], color:"#D22B8F", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:4, text:"Previous", orgText:"Previous"},
+            {id:1, dragItem:[-1, -1, -1], color:"#31C31D", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:5, text:"Anti-Previous", orgText:"Anti-Previous"},
+            {id:2, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none", orgText:"none"}            
         ],
         // Row condition 2..
         [
-            {id:0, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none",                  orgText:"none"},
-            {id:1, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none",                  orgText:"none"},
-            {id:2, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none",                  orgText:"none"},
-        ],
+            {id:0, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none", orgText:"none"},
+            {id:1, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none", orgText:"none"},
+            {id:2, dragItem:[-1, -1, -1], color:"#111111", tsize:24, tstyle:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none", orgText:"none"}
+        ]
     ];
 
     offCell = {id:2, color:"#111111", size:24, style:"bold", font:"Book Antigua", bgColor:"#FFFFFF", condID:-1, text:"none", orgText:"none"};
