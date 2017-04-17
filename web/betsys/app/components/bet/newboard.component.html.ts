@@ -71,7 +71,10 @@ export const htmlTemplate = `
               dnd-draggable 
               [dragData]="component" 
               [dragEnabled]="true">     
-            {{component.key}}
+            <span>{{component.key}}</span>
+            <span class="newboard-perfchart-icon" (click)="performanceChart(component.key)">
+              <img alt="Performance Chart" class="chart-button-img" src="static/public/images/performance_button.png" />
+            </span>
           </div>
         </template>
        </div>        
@@ -205,5 +208,103 @@ export const htmlTemplate = `
             (click)="redirectCallback();">{{alarmRedirectBtnText}}</span>
     </modal-footer>
   </modal>
+
+  <!-- Performance Chart -->
+  <div class="chart-pane"
+      *ngIf="performanceChartMeta.isPerfChart"
+      style="height: 700px;"
+      [style.marginLeft.px] = "performanceChartMeta.marginLeft"
+      [style.top]="performanceChartMeta.top + 'px'"
+    >
+
+    <div class="chart-pane-header" style="height: 90px;">
+      <div class="chart-pane-header-top">
+        <!--chart close button-->
+        <div class="chart-close-btn" (click)="performanceChartMeta.isPerfChart = false;">
+          <img src="static/public/images/button_close.png"
+                    class="chart-button-img" alt="Performance Chart">
+        </div>
+        <!--chart title-->
+        <div class="chart-title-text">{{performanceChartMeta.chartTitle}}</div>
+      </div>
+
+      <div class="chart-pane-header-bottom">
+        <!--chart tab of chip image-->
+        <div class="chart-pane-tab-bar">
+          <div 
+            class="chart-pane-tab" 
+            [ngClass]="{'chart-pane-tab-on': performanceChartMeta.tabID === 1}"
+            (click)="onTabItem(1)"
+          >
+            Info
+          </div>
+          <div 
+            class="chart-pane-tab"
+            *ngFor="let item of performanceChartMeta.dragAccounts; let idx = index;" 
+            [ngClass]="{'chart-pane-tab-on': performanceChartMeta.tabID === idx + 2}"
+            (click)="onTabItem(idx + 2)"
+          >
+            <div class="chart-aicon">
+              <span class="chart-tab-icon-text">{{performanceChartMeta.dragAccounts[2-idx].text}}</span>
+              <img 
+                src="{{'static/public/images/' + performanceChartMeta.dragAccounts[2-idx].bg_url}}"
+                class="chart-tab-icon"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="chart-pane-body" *ngIf="performanceChartMeta.tabID != 1">
+      <div class="chart-pane-box">
+        <div class="chart-pane-body-text"
+            [style.color] = "performanceChartMeta.styles.color"
+            [style.fontSize.px] = "performanceChartMeta.styles.size"
+            [style.fontFamily] = "performanceChartMeta.styles.font"
+            [style.fontWeight] = "performanceChartMeta.styles.style"
+            innerHTML="{{performanceChartMeta.perText}}"
+          >
+        </div>
+        <img class="chart-img" src="{{'/static/public/images/' + performanceChartMeta.perChartURL}}">
+      </div>
+      <div class="chart-pane-box">
+      <div class="chart-pane-body-text"
+          [style.color] = "performanceChartMeta.styles.color"
+          [style.fontSize.px] = "performanceChartMeta.styles.size"
+          [style.fontFamily] = "performanceChartMeta.styles.font"
+          [style.fontWeight] = "performanceChartMeta.styles.style"
+          innerHTML="{{performanceChartMeta.rankText}}"
+        >
+        </div>
+        <img class="chart-img" src="{{'/static/public/images/' + performanceChartMeta.rankChartURL}}">
+      </div>
+    </div>
+
+    <div class="chart-pane-body" *ngIf="performanceChartMeta.tabID == 1">
+      <div class="chart-pane-box">
+        <div class="chart-pane-body-text" style="padding-top: 0px;" 
+            [style.color] = "performanceChartMeta.styles.color"
+            [style.fontSize.px] = "performanceChartMeta.styles.size"
+            [style.fontFamily] = "performanceChartMeta.styles.font"
+            [style.fontWeight] = "performanceChartMeta.styles.style"
+            innerHTML="{{performanceChartMeta.perTextDummy}}">
+       </div>
+        <div class="chart-pane-body-text"
+            [style.color] = "performanceChartMeta.styles.color"
+            [style.fontSize.px] = "performanceChartMeta.styles.size"
+            [style.fontFamily] = "performanceChartMeta.styles.font"
+            [style.fontWeight] = "performanceChartMeta.styles.style"
+            innerHTML="{{performanceChartMeta.dateText}}">
+        </div>
+        <div class="chart-img"
+            innerHTML="{{performanceChartMeta.signals}}"
+            style="padding: 10px;"
+          >
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 `;
