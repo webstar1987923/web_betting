@@ -289,7 +289,7 @@ export const htmlTemplate = `
             [style.fontSize.px] = "performanceChartMeta.styles.size"
             [style.fontFamily] = "performanceChartMeta.styles.font"
             [style.fontWeight] = "performanceChartMeta.styles.style"
-            innerHTML="{{performanceChartMeta.perTextDummy}}">
+            innerHTML="{{performanceChartMeta.perText}}">
        </div>
         <div class="chart-pane-body-text"
             [style.color] = "performanceChartMeta.styles.color"
