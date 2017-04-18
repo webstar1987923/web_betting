@@ -1149,7 +1149,7 @@ export const htmlTemplate = `
             [style.fontSize.px] = "chartStyle[0].size"
             [style.fontFamily] = "chartStyle[0].font"
             [style.fontWeight] = "chartStyle[0].style"
-            innerHTML="{{chartInfo2[0].perTextDummy}}">
+            innerHTML="{{chartInfo2[0].perText}}">
       </div>
       <div class="chart-pane-body-text"
           [style.color] = "chartStyle[0].color"

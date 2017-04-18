@@ -202,13 +202,12 @@ export class NewBoardComponent implements OnInit {
         isPerfChart: false,
         chartTitle: "Account Performance Chart",
         perText: "Results shown reflect daily close-to-close timesteps, only aplicable to MOC orders.",
-        perTextDummy: "Voting System consisting of Anti50/50, HighestEquity.",
         perChartURL: "2017-01-06_v4mini_RiskOff.png",
         rankText: "8 Rank 29 5.8%, Rank Anti-29 -5.8%",
         rankChartURL: "2017-01-06_v4mini_RiskOff.png",
         signals: "",
-        dateTextDummy: "Signals by account as of",
         dateText: "",
+        dateTextDummy: "Signals by account as of",
         dragAccounts: [
             {   // Acount bet 50K..
                 bg_url:"chip_maroon.png",
@@ -308,9 +307,7 @@ export class NewBoardComponent implements OnInit {
             var condValueData = {};
 
             // Data for performance chart..
-            condValueData['0_perText'] = condValueJSON['v4futures_infotext'];
-            condValueData['1_perText'] = condValueJSON['v4mini_infotext'];
-            condValueData['2_perText'] = condValueJSON['v4micro_infotext'];
+            condValueData['perText'] = condValueJSON['infotext'];
             
             condValueData['0_per_file'] = condValueJSON['v4futures_filename'];
             condValueData['1_per_file'] = condValueJSON['v4mini_filename'];
@@ -723,6 +720,7 @@ export class NewBoardComponent implements OnInit {
     // For living..
     var objData = this.performanceChartMeta.chartData[this.performanceChartMeta.curComp];
     if(this.performanceChartMeta.tabID == 1) {
+        this.performanceChartMeta.perText = objData['perText'];
         this.performanceChartMeta.signals = objData['signals'];
         this.performanceChartMeta.dateText = this.performanceChartMeta.dateTextDummy + ' ' + objData['dateText'];
     } else {

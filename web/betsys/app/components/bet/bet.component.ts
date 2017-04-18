@@ -340,7 +340,6 @@ export class BetComponent implements OnInit {
         id:2, top:400, left: 340,
         chartTitle:"Account Performance Chart",
         perText:"Results shown reflect daily close-to-close timesteps, only aplicable to MOC orders.",
-        perTextDummy: "Voting System consisting of Anti50/50, HighestEquity.",
         perChartURL:"2017-01-06_v4mini_RiskOff.png",
         rankText:"8 Rank 29 5.8%, Rank Anti-29 -5.8%",
         rankChartURL:"2017-01-06_v4mini_RiskOff.png",
@@ -2185,9 +2184,7 @@ export class BetComponent implements OnInit {
         // Read Account Value performance data..
         var actValueJSON = performanceCharts['account_value'];
         var actValueData = {};
-        actValueData['0_infotext'] = actValueJSON['v4micro_infotext'];
-        actValueData['1_infotext'] = actValueJSON['v4mini_infotext'];
-        actValueData['2_infotext'] = actValueJSON['v4futures_infotext'];
+        actValueData['infotext'] = actValueJSON['infotext'];
 
         actValueData['0'] = actValueJSON['v4micro_filename'];
         actValueData['1'] = actValueJSON['v4mini_filename'];
@@ -2200,9 +2197,7 @@ export class BetComponent implements OnInit {
             var tableValueData = {};
 
             // Data for performance chart..
-            tableValueData['0_perText'] = tableValueJSON['v4futures_infotext'];
-            tableValueData['1_perText'] = tableValueJSON['v4mini_infotext'];
-            tableValueData['2_perText'] = tableValueJSON['v4micro_infotext'];
+            tableValueData['perText'] = tableValueJSON['infotext'];
             
             tableValueData['0_per_file'] = tableValueJSON['v4futures_filename'];
             tableValueData['1_per_file'] = tableValueJSON['v4mini_filename'];
@@ -2230,9 +2225,7 @@ export class BetComponent implements OnInit {
             var condValueData = {};
 
             // Data for performance chart..
-            condValueData['0_perText'] = condValueJSON['v4futures_infotext'];
-            condValueData['1_perText'] = condValueJSON['v4mini_infotext'];
-            condValueData['2_perText'] = condValueJSON['v4micro_infotext'];
+            condValueData['perText'] = condValueJSON['infotext'];
             
             condValueData['0_per_file'] = condValueJSON['v4futures_filename'];
             condValueData['1_per_file'] = condValueJSON['v4mini_filename'];
@@ -2288,7 +2281,7 @@ export class BetComponent implements OnInit {
             this.chartInfo1[0].chartTitle = "Account Performance Chart";
             this.curBetPerformance = subType + "";
             this.chartInfo1[0].chartURL = this.chartData['actValue'][this.curBetPerformance];
-            this.chartInfo1[0].bodyText = this.chartData['actValue'][this.curBetPerformance + '_infotext'];
+            this.chartInfo1[0].bodyText = this.chartData['actValue']['infotext'];
             this.isChartBox1 = true;
         } else if(type == 3) {          // For table value chart..
             this.curBetPerformance = subType + "";
@@ -2349,6 +2342,7 @@ export class BetComponent implements OnInit {
         // For living..
         var objData = this.chartData[this.curBetPerformance];
         if(this.tabID == 1) {
+            this.chartInfo2[0].perText = objData['perText'];
             this.chartInfo2[0].signals = objData['signals'];
             this.chartInfo2[0].dateText = this.chartInfo2[0].dateTextDummy + ' ' + objData['dateText'];
         } else {
