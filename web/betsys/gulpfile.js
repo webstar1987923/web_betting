@@ -122,6 +122,21 @@ gulp.task('copy:libs', function() {
 
 });
 
+// Bundle utility libraries
+gulp.task('copy:libsutil', function() {
+
+  // concatenate utility libraries
+  gulp.src([
+    'node_modules/moment/min/moment.min.js',
+    'node_modules/moment-timezone/builds/moment-timezone.min.js',
+    'node_modules/moment-timezone/builds/moment-timezone-with-data-2012-2022.min.js'
+  ])
+  .pipe(concat('libsutil.min.js'))
+  .pipe(gulp.dest('dist/lib'));
+
+});
+
+
 // Update the tsconfig files based on the glob pattern
 gulp.task('tsconfig-glob', function () {
   return tsconfig({
@@ -141,7 +156,7 @@ gulp.task('lint', ['lint:ts']);
 gulp.task('clean', ['clean:dist:js', 'clean:dist:css', 'clean:lib']);
 
 gulp.task('copy', function(callback) {
-  runSequence('clean:lib', 'copy:libs', callback);
+  runSequence('clean:lib', 'copy:libs', 'copy:libsutil', callback);
 });
 
 gulp.task('scripts', function(callback) {

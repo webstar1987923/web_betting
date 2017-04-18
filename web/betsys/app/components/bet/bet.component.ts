@@ -8,6 +8,7 @@ import { BetService, BetXHRService }    from 'app/services/bet.service';
 import { ReturnTextColorRelativeToBackground }  from 'app/pipes/bet.pipes';
 import { ListToObjectTransform, 
          ReturnTextColorRelativeToBackground }  from 'app/pipes/bet.pipes';
+import * as moment_ from 'moment';         
  
 @Component({
     // moduleId : module.id,
@@ -52,6 +53,8 @@ export class BetComponent implements OnInit {
     @ViewChild('cfgModalOff') cfgModalOff:ModalComponent;
     @ViewChild('alarmModal') alarmModal:ModalComponent;
     @ViewChild('confirmModal') confirmModal:ModalComponent;
+
+    const moment:moment.MomentStatic = (<any>moment_)['default'] || moment_;
     
     // Component dictionary features..
     componentDict = [
@@ -942,23 +945,11 @@ export class BetComponent implements OnInit {
     }
 
     currentTime() {
-        var now = new Date();
-        var estMiliTime = now.getTime() + (now.getTimezoneOffset() - 300) * 60000;
-        var estTime = new Date(estMiliTime);
-        var nYear = estTime.getFullYear();
-        var nTemp = estTime.getMonth() + 1;
-        var nMonth = nTemp > 9 ? nTemp : '0' + nTemp;
-        var nTemp = estTime.getDate();
-        var nDay = nTemp > 9 ? nTemp : '0' + nTemp;
-        var nTemp = estTime.getHours();
-        var nHour = nTemp > 9 ? nTemp : '0' + nTemp;
-        var nTemp = estTime.getMinutes();
-        var nMin = nTemp > 9 ? nTemp : '0' + nTemp;
-        var nTemp = estTime.getSeconds();
-        var nSec = nTemp > 9 ? nTemp : '0' + nTemp;
-        var strDate = nYear + "/" + nMonth + "/" + nDay;
-        var strTime = nHour + ":" + nMin + ":" + nSec;
-        // console.log("[Bet.Component] EST Current Time ->", strDate, this.curTimePane);
+        
+        var strDate = moment().tz('America/New_York').format('YYYY/MM/DD');
+        var strTime = moment().tz('America/New_York').format('HH:mm:ss');
+        
+
         if(this.curTimePane !== undefined) {
             this.curYearPane.nativeElement.innerHTML = strDate;
             this.curTimePane.nativeElement.innerHTML = strTime;
