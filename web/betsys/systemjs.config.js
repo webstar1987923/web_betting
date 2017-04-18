@@ -24,7 +24,7 @@
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
       '@angular/upgrade': 'npm:@angular/upgrade/bundles/upgrade.umd.js',
       // other libraries
-      'rxjs':                      'npm:rxjs',
+      'rxjs': 'npm:rxjs',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js',
       'moment' : 'node_modules/moment/moment.js',
       'ng2-bootstrap/ng2-bootstrap' : 'node_modules/ng2-bootstrap/bundles/ng2-bootstrap.umd.js',
@@ -32,7 +32,9 @@
       'ng2-bs3-modal': 'node_modules/ng2-bs3-modal',
       'ts-metadata-helper': 'npm:ts-metadata-helper',
       'angular2-dynamic-component': 'npm:angular2-dynamic-component',
-      'angular2-busy': 'npm:angular2-busy'
+      'angular2-busy': 'npm:angular2-busy',
+      'moment': 'npm:moment',
+      'moment-timezone': 'npm:moment-timezone'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
@@ -58,6 +60,14 @@
         defaultExtension: 'js'
       },
       'angular2-busy': {
+        main: './index.js',
+        defaultExtension: 'js'
+      },
+      'moment': {
+        main: './moment.js',
+        defaultExtension: 'js'
+      },
+      'moment-timezone': {
         main: './index.js',
         defaultExtension: 'js'
       }
