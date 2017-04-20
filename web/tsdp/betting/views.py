@@ -39,7 +39,7 @@ def addrecord(request):
         print cloc
         votingComponents=get_blends(cloc)
 
-    record = UserSelection(userID=request.POST.get('user_id', 32), selection=request.POST.get('Selection', '{}'), \
+    record = UserSelection(userID=request.POST.get('user_id', 32), selection=request.POST.get("Selection"), \
                             v4futures=json.dumps(votingComponents), v4mini=json.dumps(votingComponents), \
                             v4micro=json.dumps(votingComponents),
                             componentloc = json.dumps(cloc),
