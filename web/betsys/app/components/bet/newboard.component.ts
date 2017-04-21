@@ -108,6 +108,11 @@ export class NewBoardComponent implements OnInit {
         'message': ''
       };
 
+      config2 = {
+        'busy': '',
+        'message': ''
+      };
+
     	pageMeta = {
         "cNone": {},
         
@@ -247,30 +252,32 @@ export class NewBoardComponent implements OnInit {
       }
 
       ngOnInit() {
-        this.busyA = this.http.get('/getrecords').toPromise();
-        this.busyB = this.http.get('/getmetadata').toPromise();
+        this.config1 = {
+            'message': 'Loading New board page...',
+            'busy': [this.busyA, this.busyB]
+        };
       }
 
 
       getRecords() {
         var _this = this;
 
-        this.betService
-            .getRecords()
-            .then(function(response) {
+        this.busyA = this.betService
+                      .getRecords()
+                      .then(function(response) {
 
-              _this.recordsMeta = response.first;
+                        _this.recordsMeta = response.first;
 
-              _this.customBoardStylesMeta = _this.listToObjectPipe.transform(response.first.customstyles);
+                        _this.customBoardStylesMeta = _this.listToObjectPipe.transform(response.first.customstyles);
 
-              _this.boxStyles = _this.recordsMeta.boxstyles;
+                        _this.boxStyles = _this.recordsMeta.boxstyles;
 
-              _this.assignPageMeta();
+                        _this.assignPageMeta();
         
-              _this.parsePerformanceData();
+                        _this.parsePerformanceData();
 
-            })
-            .catch(error => this.error = error);
+                      })
+                      .catch(error => this.error = error);
       }
 
       assignPageMeta() {
@@ -343,21 +350,22 @@ export class NewBoardComponent implements OnInit {
       }
 
       getComponentsList() {
-        var _this = this;
+          
+          var _this = this;
 
-      	this.betService
-        		.getComponents()
-        		.then(function(response) {
-              _this.components = _this.objectToArrayPipe.transform(response.components);
+        	this.busyB = this.betService
+          		            .getComponents()
+          		            .then(function(response) {
+                            _this.components = _this.objectToArrayPipe.transform(response.components);
 
-              _this.componentsLen = _this.components.length;
+                            _this.componentsLen = _this.components.length;
 
-              _this.addComponentMetadata();
+                            _this.addComponentMetadata();
 
-              _this.generateComponentAssoc();
+                            _this.generateComponentAssoc();
 
-            })
-        		.catch(error => this.error = error);
+                      })
+          		        .catch(error => this.error = error);
       }
 
       addComponentMetadata() {
@@ -595,7 +603,7 @@ export class NewBoardComponent implements OnInit {
                             }
                         });
 
-      this.config1 = {
+      this.config2 = {
         'busy': this.busyC,
         'message': this.pageMeta.loadingMessages[0].newboard
       };                  
