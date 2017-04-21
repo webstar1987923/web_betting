@@ -896,7 +896,7 @@ export const htmlTemplate = `
       [style.fontSize.px] = "dlgStyles[0].size"
       [style.fontFamily] = "dlgStyles[0].font"
       [style.fontWeight] = "dlgStyles[0].style"
-      (click)="onOKVote(); cfgModalVote.close();"
+      (click)="onOKVote(); cfgModalVote.close(); voteType = 0; entryType = 0;"
     >
       {{dlgStyles[0].text}}
     </span>
@@ -908,7 +908,7 @@ export const htmlTemplate = `
       [style.fontSize.px] = "dlgStyles[1].size"
       [style.fontFamily] = "dlgStyles[1].font"
       [style.fontWeight] = "dlgStyles[1].style"
-      (click)="onCancelVote(); cfgModalVote.close();"
+      (click)="onCancelVote(); cfgModalVote.close(); voteType = 0; entryType = 0;"
     >
       {{dlgStyles[1].text}}
     </span>
@@ -953,7 +953,7 @@ export const htmlTemplate = `
       [style.fontSize.px] = "dlgStyles[0].size"
       [style.fontFamily] = "dlgStyles[0].font"
       [style.fontWeight] = "dlgStyles[0].style"
-      (click)="onOKVote(); cfgModalOff.close();"
+      (click)="onOKVote(); cfgModalOff.close(); entryType = 0;"
     >
       {{dlgStyles[0].text}}
     </span>
@@ -965,7 +965,7 @@ export const htmlTemplate = `
       [style.fontSize.px] = "dlgStyles[1].size"
       [style.fontFamily] = "dlgStyles[1].font"
       [style.fontWeight] = "dlgStyles[1].style"
-      (click)="onCancelVote(); cfgModalOff.close();"
+      (click)="onCancelVote(); cfgModalOff.close();  entryType = 0;"
     >
       {{dlgStyles[1].text}}
     </span>
