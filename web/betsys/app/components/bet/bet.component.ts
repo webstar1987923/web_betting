@@ -447,15 +447,9 @@ export class BetComponent implements OnInit {
 
     ngOnInit() {
 
-        this.busyA = this.http.get('/getrecords').toPromise();
-        this.busyB = this.http.get('/getmetadata').toPromise();
-        this.busyC = this.http.get('/getaccountdata').toPromise();
-        this.busyD = this.http.get('/gettimetable').toPromise();
-        this.busyE = this.http.get('/getstatus').toPromise();
-
         this.config1 = {
             'message': 'Loading board data...',
-            'busy': [this.busyA, this.busyB, this.busyC, this.busyD, this.busyC]
+            'busy': [this.busyA, this.busyB, this.busyC, this.busyD, this.busyE]
         };
     }
 
@@ -1421,7 +1415,7 @@ export class BetComponent implements OnInit {
         console.log("[Bet.Component] Previous Bet HTTP : ", body);
 
 
-        return this.http.get(body).subscribe(response => {
+        this.busyA = this.http.get(body).subscribe(response => {
             var jsonData = response.json() || {};
             console.log("[Bet.Componenet] GET Betting Result Success : ", jsonData);
             this.parseBetInfo(jsonData);
@@ -1437,7 +1431,7 @@ export class BetComponent implements OnInit {
 
         console.log("[Bet.Component] Previous Meta Data HTTP : ", body);
 
-        return this.http.get(body).subscribe(response => {
+        this.busyB = this.http.get(body).subscribe(response => {
             var jsonData = response.json() || {};
             console.log("[Bet.Componenet] GET Meta Data Result Success : ", jsonData);
             this.setTriggerData(jsonData);
@@ -1453,7 +1447,7 @@ export class BetComponent implements OnInit {
 
         console.log("[Bet.Component] Previous Account Data HTTP : ", body);
 
-        return this.http.get(body).subscribe(response => {
+        this.busyC = this.http.get(body).subscribe(response => {
             var jsonData = response.json() || {};
             console.log("[Bet.Componenet] GET Account Result Success : ", jsonData);
             this.parseAccountData(jsonData);
@@ -1469,7 +1463,7 @@ export class BetComponent implements OnInit {
 
         console.log("[Bet.Component] Previous Time Table HTTP : ", body);
 
-        return this.http.get(body).subscribe(response => {
+        this.busyD = this.http.get(body).subscribe(response => {
             var jsonData = response.json() || {};
             console.log("[Bet.Componenet] GET TIme Table Success : ", jsonData);
             this.parseTimeTableData(jsonData);
@@ -1485,7 +1479,7 @@ export class BetComponent implements OnInit {
 
         console.log("[Bet.Component] Previous Unrealized PNL HTTP : ", body);
 
-        return this.http.get(body).subscribe(response => {
+        this.busyE = this.http.get(body).subscribe(response => {
             var jsonData = response.json() || {};
             console.log("[Bet.Componenet] GET Unrealized PNL Success : ", jsonData);
             this.parseUnrealizedPNLData(jsonData);
