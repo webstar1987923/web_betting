@@ -2169,11 +2169,15 @@ export class BetComponent implements OnInit {
         // Read Account Value performance data..
         var actValueJSON = performanceCharts['account_value'];
         var actValueData = {};
-        actValueData['infotext'] = actValueJSON['infotext'];
 
         actValueData['0'] = actValueJSON['v4micro_filename'];
         actValueData['1'] = actValueJSON['v4mini_filename'];
         actValueData['2'] = actValueJSON['v4futures_filename'];
+
+        actValueData['0_infotext'] = actValueJSON['v4micro_infotext'];
+        actValueData['1_infotext'] = actValueJSON['v4mini_infotext'];
+        actValueData['2_infotext'] = actValueJSON['v4futures_infotext'];
+        
         this.chartData['actValue'] = actValueData;
 
         // Read tabel Value performance data..
@@ -2266,7 +2270,7 @@ export class BetComponent implements OnInit {
             this.chartInfo1[0].chartTitle = "Account Performance Chart";
             this.curBetPerformance = subType + "";
             this.chartInfo1[0].chartURL = this.chartData['actValue'][this.curBetPerformance];
-            this.chartInfo1[0].bodyText = this.chartData['actValue']['infotext'];
+            this.chartInfo1[0].bodyText = this.chartData['actValue'][this.curBetPerformance +'_infotext'];
             this.isChartBox1 = true;
         } else if(type == 3) {          // For table value chart..
             this.curBetPerformance = subType + "";
