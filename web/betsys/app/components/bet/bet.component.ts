@@ -1656,6 +1656,7 @@ export class BetComponent implements OnInit {
             }
         } else {                                            // put as a normal object..
             if(component.length < 3) {              // put it on bet table..
+                dragObj.iNextBet = 0;
                 this.putBetOnTable(component, dragObj, dragItem);
             } else {                                // put it on condition panel..
                 this.putBetOnCond(component, dragObj, dragItem, 1);
