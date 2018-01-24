@@ -1,4 +1,4 @@
-Python + Angular2
+Python + Angular
 
 First install node.js from https://nodejs.org/en/
 
